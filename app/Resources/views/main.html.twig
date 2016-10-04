@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Here are all your tasks</h1>
+    <textarea id="content" cols="20" rows="4"></textarea>
+    <button id="submit">Submit </button>
+    <div id="tasks"></div>
+    {% for todo in todos %}
+        <li>{{ todo.body|e }}</li>
+    {% endfor %}
+    <script>
+
+    $(document).ready(function(){
+        function GetTodos() {
+            $.get("{{ path('show_todos') }}", function(result){
+                $.each(result, function(i, value){
+                    $("#tasks").before($('<li>', {
+                        id: '' + value[0],
+                        text: '' + value[1] ,
+                    }));
+                });
+            });
+        };
+        $("#submit").click(function(){
+            var bodyVal = $('#content').val();
+            $.post("{{ path('create_todo') }}",
+            {
+                body: bodyVal
+            }, function(value){
+                $("#tasks").before($('<li>', {
+                    id: '' + value[0],
+                    text: '' + value[1] ,
+                }));
+            });
+        });
+    });
+    </script>
+{% endblock %}
