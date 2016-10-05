@@ -3,10 +3,27 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
+        
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <style>
+            #homepageLink:hover { text-decoration: none; }
+            #homepageLink { font-family: sans-serif; }
+            h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
+            h1 { font-size: 36px; }
+        </style>
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
+        <div style="width:100%; background-color:black">
+            <a id="homepageLink" href="{{ path('homepage') }}"><h1 style="color:white; padding:10px">Organizer</h1></a>
+        </div>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>

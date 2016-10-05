@@ -1,0 +1,9 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% block fos_user_content %}
+<div class="jumbotron">
+    <h1> Login </h1>
+    <p> If you don't have an account, register <a href="{{ url('fos_user_registration_register') }}">here</a> </p>
+</div>
+    {{ include('FOSUserBundle:Security:login_content.html.twig') }}
+{% endblock fos_user_content %}
