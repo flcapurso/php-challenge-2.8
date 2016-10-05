@@ -2,15 +2,10 @@
 
 {% block body %}
 <div class="container">
-            <div class="jumbotron">
-                <h1> Login </h1>
-                <p> If you don't have an account, register here <p>
-            </div>
-
-            <div class="row">
-                <div class="span12">
-                    {{ block('fos_user_content') }}
-                </div>
-            </div>
+    <div class="row">
+        <div class="span12">
+            {{ block('fos_user_content') }}
         </div>
+    </div>
+</div>
 {% endblock %}

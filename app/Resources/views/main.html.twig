@@ -1,37 +1,102 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Here are all your tasks</h1>
-    <textarea id="content" cols="20" rows="4"></textarea>
-    <button id="submit">Submit </button>
-    <div id="tasks"></div>
-    {% for todo in todos %}
-        <li>{{ todo.body|e }}</li>
-    {% endfor %}
-    <script>
+<style>
+    #todoList {
+    -moz-column-width: 24em;
+    -webkit-column-width: 24em;
+    -moz-column-gap: 1em;
+    -webkit-column-gap: 1em;
+    }
 
-    $(document).ready(function(){
-        function GetTodos() {
+    .todoHolder {
+    padding: 2em 1em 2em 1em;
+    display: inline-block;
+    width: 100%;
+    }
+
+    .todo {
+    position: relative;
+    text-align: center;
+    padding: 1em 1.5em;
+    background-color: #eaeaea;
+    transition: 0.2s;
+    }
+    .todo:hover {
+    transform: scale(1.1, 1.1);
+    }
+    .todo:before {
+    content: "";
+    position: absolute;
+    top:0;
+    display: block;
+    width: 0;
+    right: 0;
+    border-width: 0 3em 3em 0;
+    border-style: solid;
+    border-color: lightgray #F5F5F5;
+    transition: 0.2s;
+    }
+    .todo:hover:before {
+    border-width: 0 0 0 0;
+    }
+
+    .todo h3 {
+    font-family: "Droid Serif";
+    font-size: 1.3em;
+    }
+
+    a {
+    text-decoration: none !important;
+    }
+</style>
+
+
+<h1>Here are all your tasks</h1>
+<input id="content" placeholder="What needs to be done?" autofocus>
+<button id="submit">Submit </button>
+<div class="row" id="todoList">
+</div>
+
+
+<script>
+    var $todoTemplate = $('\
+        <div class="todoHolder" id="Default">\
+            <a href="#">\
+                <div class="todo">\
+                    <h3>Article Title</h3>\
+                </div>\
+            </a>\
+        </div>\
+    ');
+
+    function GetTodos() {
             $.get("{{ path('show_todos') }}", function(result){
                 $.each(result, function(i, value){
-                    $("#tasks").before($('<li>', {
-                        id: '' + value[0],
-                        text: '' + value[1] ,
-                    }));
+                    var $newTodo = $todoTemplate.clone();
+                    $newTodo.find('h3').text('' + value[1]);
+                    $newTodo.find('.todoHolder').attr('id',('' + value[0]));
+                    $("#todoList").prepend($newTodo);
                 });
             });
-        };
+    };
+
+    $(document).ready(function(){
+        GetTodos();
+
         $("#submit").click(function(){
             var bodyVal = $('#content').val();
             $.post("{{ path('create_todo') }}",
             {
                 body: bodyVal
             }, function(value){
-                $("#tasks").before($('<li>', {
-                    id: '' + value[0],
-                    text: '' + value[1] ,
-                }));
+                    var $newTodo = $todoTemplate.clone();
+                    $newTodo.find('h3').text('' + value[1]);
+                    $newTodo.find('.todoHolder').attr('id',('' + value[0]));
+                    $("#todoList").prepend($newTodo);
             });
         });
     });
-    </script>
+</script>
+
+
 {% endblock %}
