@@ -1,4 +1,2 @@
-challenge_2.8
+SOON TO BE FILLED IN
 =============
-
-A Symfony project created on June 8, 2016, 12:56 am.
