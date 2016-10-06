@@ -5,6 +5,7 @@ namespace Acme\UserBundle\Entity;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Todo;
 
 /**
  * @ORM\Entity
@@ -29,18 +30,17 @@ class User extends BaseUser
         $this->todos = new ArrayCollection();
 
         parent::__construct();
-        // your own logic
     }
 
     /**
      * Add todos
      *
-     * @param \AppBundle\Entity\Todo $todos
+     * @param \AppBundle\Entity\Todo $todo
      * @return User
      */
-    public function addTodo(\AppBundle\Entity\Todo $todos)
+    public function addTodo($todo)
     {
-        $this->todos[] = $todos;
+        $this->todos->add($todo);
 
         return $this;
     }
@@ -48,11 +48,11 @@ class User extends BaseUser
     /**
      * Remove todos
      *
-     * @param \AppBundle\Entity\Todo $todos
+     * @param \AppBundle\Entity\Todo $todo
      */
-    public function removeTodo(\AppBundle\Entity\Todo $todos)
+    public function removeTodo($todo)
     {
-        $this->todos->removeElement($todos);
+        $this->todos->removeElement($todo);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Acme\UserBundle\Entity\User;
 
 /**
  * Todo
@@ -103,7 +104,7 @@ class Todo
      * @param \Acme\UserBundle\Entity\User $user
      * @return Todo
      */
-    public function setUser(\Acme\UserBundle\Entity\User $user = null)
+    public function setUser($user = null)
     {
         $this->user = $user;
 

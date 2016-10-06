@@ -12,60 +12,57 @@ use Symfony\Component\HttpFoundation\Request;
 class MainController extends Controller
 {
     /**
-     * @Route("/main", name="main"))
+     * @Route("/main", name="main")
      */
     public function mainAction()
     {   
-        if (!($this->container->get('security.authorization_checker')->isGranted('ROLE_USER'))) {
+        if (! $this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('homepage');
         }
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $user = $this->getUser();
 
         $todos = $user->getTodos();
 
-        return $this->render('main.html.twig', array(
-            'todos' => $todos
-        ));
+        return $this->render('main.html.twig', ['todos' => $todos]);
     }
 
 
     /**
-     * @Route("/main/create", name="create_todo"))
+     * @Route("/main/create", name="create_todo", options={"expose"=true})
      */
     public function createAction(Request $request)
-    {   $user = $this->container->get('security.token_storage')->getToken()->getUser();
+    {   
+        $user = $this->getUser();
 
         $data = $request->request->get('request');
         $todo = new Todo();
-        $todo->setBody($_POST['body']);
+        $todo->setBody($request->request->get('body'));
         $todo->setCompleted(false);
         $todo->setUser($user);
 
         $em = $this->getDoctrine()->getManager();
 
-        // tells Doctrine you want to (eventually) save the Todo (no queries yet)
         $em->persist($todo);
 
-        // actually executes the queries (i.e. the INSERT query)
         $em->flush();
         
-        return new JsonResponse(array($todo->getId(),$todo->getBody()));
+        return new JsonResponse([ 'id' => $todo->getId(), 'body' => $todo->getBody(), ]);
     }
 
 
     /**
-     * @Route("/main/show", name="show_todos"))
+     * @Route("/main/show", name="show_todos", options={"expose"=true})
      */
     public function showProductsAction()
     {
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $user = $this->getUser();
 
         $todos = $user->getTodos();
 
-        $todosArray = array();
+        
         $todos = $todos->toArray();
         foreach ($todos as $todo) {
-            array_push($todosArray, array($todo->getId(), $todo->getBody(), $todo->getCompleted()) );
+            $todosArray[] = ['id' => $todo->getId(), 'body' => $todo->getBody(), 'completed' => $todo->getCompleted()];
         }
 
         return new JsonResponse($todosArray);

@@ -27,7 +27,7 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
-        if (($this->container->get('security.authorization_checker')->isGranted('ROLE_USER'))) {
+        if ($this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('main');
         }
         /** @var $session \Symfony\Component\HttpFoundation\Session\Session */
@@ -68,15 +68,15 @@ class SecurityController extends Controller
                 : null;
         }
 
-        if (($this->container->get('security.authorization_checker')->isGranted('ROLE_USER'))) {
+        if ($this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('main');
         }
         
-        return $this->renderLogin(array(
+        return $this->renderLogin([
             'last_username' => $lastUsername,
             'error' => $error,
             'csrf_token' => $csrfToken,
-        ));
+        ]);
     }
 
     /**
