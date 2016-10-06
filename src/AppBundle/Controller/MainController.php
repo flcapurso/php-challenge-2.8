@@ -116,4 +116,82 @@ class MainController extends Controller
 
         return new JsonResponse("Completed state updated with".$todo->getCompleted());
     }
+
+
+    /**
+     * @Route("/main/completeAll", name="complete_all", options={"expose"=true})
+     */
+    public function completeAllAction()
+    {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $this->getUser();
+        $todos = $user->getTodos();
+        $todos = $todos->toArray();
+
+        $actionDone = '';
+        $falseItemsNumber = 0;
+        $trueItemsNumber = 0;
+        foreach ($todos as $todo) {
+            if ($todo->getCompleted()){
+                $trueItemsNumber++;
+            } else{
+                $falseItemsNumber++;
+            }
+        }
+
+        if ($falseItemsNumber == 0){
+
+            foreach ($todos as $todo) {
+                $todo->setCompleted(false);
+            }
+            $actionDone = 'makeAllFalse';
+
+        } else if ($trueItemsNumber == 0) {
+
+            foreach ($todos as $todo) {
+                $todo->setCompleted(true);
+            }
+            $actionDone = 'makeAllTrue';
+
+        } else {
+
+            foreach ($todos as $todo) {
+                $todo->setCompleted(! $todo->getCompleted());
+            }
+            $actionDone = 'toggle';
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['action'=>$actionDone]);
+    }
+
+    /**
+     * @Route("/main/clearCompleted", name="clear_completed", options={"expose"=true})
+     */
+    public function clearCompletedAction()
+    {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $this->getUser();
+        $todos = $user->getTodos();
+        $todos = $todos->toArray();
+
+        $IdArray = [];
+        foreach ($todos as $todo) {
+            if ($todo->getCompleted()){
+                $IdArray[] = ['id' => $todo->getId()];
+
+                $user->removeTodo($todo);
+                $em->remove($todo);
+            }
+        }
+
+        $em->flush();
+
+        return new JsonResponse($IdArray);
+    }
 } 

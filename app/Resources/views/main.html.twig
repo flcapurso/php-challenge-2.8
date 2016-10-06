@@ -96,7 +96,12 @@
 {% block body %}
     <h1>Here are all your tasks</h1>
     <input id="content" placeholder="What needs to be done?" autofocus>
-    <button id="submit">Submit </button>
+    <button id="submit" type="button" class="btn btn-default">Submit </button>
+    <button id="all" type="button" class="btn btn-primary">All</button>
+    <button id="active" type="button" class="btn btn-info">Active</button>
+    <button id="completed" type="button" class="btn btn-success">Completed</button>
+    <button id="completeAll" type="button" class="btn btn-warning">Toggle completion of ALL</button>
+    <button id="clearCompleted" type="button" class="btn btn-danger">Clear Completed</button>
     <div class="row" id="todoList">
     </div>
 {% endblock %}
@@ -154,6 +159,29 @@
                 CreateTodo(newTodo);
             });
         });
+
+        $("#completeAll").click(function(){
+            $.get("{{ path('complete_all') }}", function(response){
+                if (response['action'] == 'makeAllFalse'){
+                    $('input[type="checkbox"]').prop( "checked", false );
+                } else if (response['action'] == 'makeAllTrue'){
+                    $('input[type="checkbox"]').prop( "checked", true );
+                } else {
+                    $('input[type="checkbox"]').each(function () {
+                        $(this).prop( "checked", !$(this).prop("checked") );
+                    });
+                }
+            });
+        });
+
+        $("#clearCompleted").click(function(){
+            $.get("{{ path('clear_completed') }}", function(result){
+                $.each(result, function(i, todo){
+                    $("#" + todo['id']).parent().parent().remove();
+                });
+            });
+        });
+        
 
     });
 </script>
