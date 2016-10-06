@@ -1,53 +1,95 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
 <style>
+
     #todoList {
-    -moz-column-width: 24em;
-    -webkit-column-width: 24em;
-    -moz-column-gap: 1em;
-    -webkit-column-gap: 1em;
+        margin-left:0.1em;
+        margin-right:0.2em;
+        -moz-column-width: 23em;
+        -webkit-column-width: 23em;
+        -moz-column-gap: 1em;
+        -webkit-column-gap: 1em;
     }
 
     .todoHolder {
-    padding: 2em 1em 2em 1em;
-    display: inline-block;
-    width: 100%;
+        padding: 2em 1em 2em 1em;
+        display: inline-block;
+        width: 100%;
     }
 
     .todo {
-    position: relative;
-    text-align: center;
-    padding: 1em 1.5em;
-    background-color: #eaeaea;
-    transition: 0.2s;
+        position: relative;
+        text-align: center;
+        padding: 1em 1.5em;
+        background-color: #eaeaea;
+        transition: 0.2s;
     }
     .todo:hover {
-    transform: scale(1.1, 1.1);
+      transform: scale(1.1, 1.1);
     }
     .todo:before {
-    content: "";
-    position: absolute;
-    top:0;
-    display: block;
-    width: 0;
-    right: 0;
-    border-width: 0 3em 3em 0;
-    border-style: solid;
-    border-color: lightgray #F5F5F5;
-    transition: 0.2s;
+        content: "";
+        position: absolute;
+        top:0;
+        display: block;
+        width: 0;
+        right: 0;
+        border-width: 0 3em 3em 0;
+        border-style: solid;
+        border-color: lightgray #F5F5F5;
+        transition: 0.2s;
     }
     .todo:hover:before {
-    border-width: 0 0 0 0;
+        border-width: 0 0 0 0;
+    }
+
+    .todo:hover #remove {
+        display:block;
+        visibility: visible;
     }
 
     .todo h3 {
-    font-family: "Droid Serif";
-    font-size: 1.3em;
+        font-family: "Droid Serif";
+        font-size: 1.3em;
     }
 
     a {
-    text-decoration: none !important;
+        text-decoration: none !important;
     }
+
+    #remove {
+        width:25px;
+        height:25px;
+        float:right;
+        visibility: hidden;
+    }
+
+    #remove:hover div {
+        background: #1ebcc5;
+    }
+
+    .segment1 {
+        height:25px;
+        width:2px;
+        margin-left:12px;
+        background-color:black;
+        transform: rotate(45deg);
+        -ms-transform: rotate(45deg); /* IE 9 */
+        -webkit-transform: rotate(45deg); /* Safari and Chrome */
+        z-index:1;
+    }
+
+    .segment2 {
+        height:25px;
+        width:2px;
+        background-color:black;
+        transform: rotate(90deg);
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -webkit-transform: rotate(90deg); /* Safari and Chrome */
+        z-index:2;
+    }
+
+    
 </style>
 {% endblock %}
 
@@ -62,30 +104,44 @@
 {% block javascripts %}
 <script>
     var $todoTemplate = $('\
-        <div class="todoHolder" id="Default">\
+        <div class="todoHolder">\
             <a href="#">\
                 <div class="todo">\
+                    <div id="remove" onClick="RemoveTodo($(this))"><div class="segment1"><div class="segment2"></div></div></div>\
+                    <input type="checkbox" id="completed" value="1" style="float:left" onCLick="CompleteTodo($(this))"/>\
                     <h3>Article Title</h3>\
                 </div>\
             </a>\
         </div>\
     ');
 
-    function GetTodos() {
-            $.get("{{ path('show_todos') }}", function(result){
-                $.each(result, function(i, todo){
-                    CreateTodo(todo);
-                });
-            });
-    };
-
     function CreateTodo(todo) {
         var $newTodo = $todoTemplate.clone();
         $newTodo.find('h3').text('' + todo['body']);
-        $newTodo.find('.todoHolder').attr('id',('' + todo['id']));
+        $newTodo.find('.todo').attr('id',('' + todo['id']));
+        $newTodo.find('input').prop( "checked", todo['completed'] );
         $("#todoList").prepend($newTodo);
-    }
+    };
 
+    function GetTodos() {
+        $.get("{{ path('show_todos') }}", function(result){
+            $.each(result, function(i, todo){
+                CreateTodo(todo);
+            });
+        });
+    };
+
+    function CompleteTodo($completedTodo) {
+        var todoId = $completedTodo.parent().attr('id');
+        $.post("{{ path('complete_todo') }}", { id: todoId });
+    };
+
+    function RemoveTodo($removedItem) {
+        var todoId = $removedItem.parent().attr('id');
+        $.post("{{ path('remove_todo') }}", { id: todoId});
+        $removedItem.parent().parent().parent().remove();
+    };
+    
     $(document).ready(function(){
         GetTodos();
 
@@ -98,6 +154,7 @@
                 CreateTodo(newTodo);
             });
         });
+
     });
 </script>
 

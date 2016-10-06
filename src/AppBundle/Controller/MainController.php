@@ -34,7 +34,6 @@ class MainController extends Controller
     {   
         $user = $this->getUser();
 
-        $data = $request->request->get('request');
         $todo = new Todo();
         $todo->setBody($request->request->get('body'));
         $todo->setCompleted(false);
@@ -61,10 +60,60 @@ class MainController extends Controller
 
         
         $todos = $todos->toArray();
+        $todosArray = [];
         foreach ($todos as $todo) {
             $todosArray[] = ['id' => $todo->getId(), 'body' => $todo->getBody(), 'completed' => $todo->getCompleted()];
         }
 
         return new JsonResponse($todosArray);
+    }
+
+    /**
+     * @Route("/main/remove", name="remove_todo", options={"expose"=true})
+     */
+    public function removeAction(Request $request)
+    {   
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        $todoId = $request->request->get('id');
+        $todo = $em->getRepository('AppBundle:Todo')->find($todoId);
+
+        if (!$todo) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$todoId
+            );
+        }
+
+        $user->removeTodo($todo);
+        $em->remove($todo);
+        $em->flush();
+
+
+        return new JsonResponse("Item removed Correctly");
+    }
+
+    /**
+     * @Route("/main/complete", name="complete_todo", options={"expose"=true})
+     */
+    public function completeAction(Request $request)
+    {   
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        $todoId = $request->request->get('id');
+        $todo = $em->getRepository('AppBundle:Todo')->find($todoId);
+
+        if (!$todo) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$todoId
+            );
+        }
+
+        $todo->setCompleted(! $todo->getCompleted());
+        $em->flush();
+
+
+        return new JsonResponse("Completed state updated with".$todo->getCompleted());
     }
 } 
