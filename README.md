@@ -34,10 +34,23 @@ I had to use light editor, such as VS CODE, on borrowed machines. On the other h
 LAMP to develop my future Synfony apps.
 
 ## Setup
-The system should be set up in order to be run locally with the inbuilt PHP server. In the following link you can find
-all the steps to set deploy the application.
+The system should be set up in order to be run locally with the inbuilt PHP server. In the following links you can find
+all the steps to set and deploy the application.
 
-[How to Deploy a Symfony2.8 Application](http://symfony.com/doc/2.8/deployment.html)
+
+###1 [Get MySql] (http://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing)
+###2 [Download Composer] (http://getcomposer.org/)
+###3 Install Composer `php composer.phar install`
+(Parameters can be left as default)
+###4 Get FOSUserBundle `composer require friendsofsymfony/user-bundle "~2.0@dev"`
+###5 Clear cache `php app/console cache:clear --env=prod --no-debug`
+###6 Dump Assetic Assets `php app/console assetic:dump --env=prod --no-debug`
+###7 Run Migrations `php app/console doctrine:migrations:migrate`
+###8 Start server `php app/console server:run`
+###9 Visit _localhost:8000_ on your browser
+
+
+[More Info Here](http://symfony.com/doc/2.8/deployment.html)
 
 ## Overall Considerations
 
