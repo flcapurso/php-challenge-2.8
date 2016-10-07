@@ -55,14 +55,12 @@ class MainController extends Controller
 
         $todos = $user->getTodos();
 
-        
-        $todos = $todos->toArray();
         $todosArray = [];
         foreach ($todos as $todo) {
             $todosArray[] = ['id' => $todo->getId(), 'body' => $todo->getBody(), 'completed' => $todo->getCompleted()];
         }
 
-        return new JsonResponse($todosArray);
+        return new JsonResponse([ 'todo_ids' => $todosArray]);
     }
 
     /**
@@ -87,7 +85,7 @@ class MainController extends Controller
         $em->flush();
 
 
-        return new JsonResponse("Item removed Correctly");
+        return new JsonResponse(['message' => "Item removed Correctly"]);
     }
 
     /**
@@ -111,7 +109,7 @@ class MainController extends Controller
         $em->flush();
 
 
-        return new JsonResponse("Completed state updated with".$todo->getCompleted());
+        return new JsonResponse(['message' => "Completed state updated with".$todo->getCompleted()]);
     }
 
 
@@ -125,31 +123,20 @@ class MainController extends Controller
 
         $user = $this->getUser();
         $todos = $user->getTodos();
-        $todos = $todos->toArray();
 
         $actionDone = '';
         $falseItemsNumber = 0;
         foreach ($todos as $todo) {
-            if (! $todo->getCompleted()){
-                $falseItemsNumber++;
-            }
+            $falseItemsNumber += (int) (! $todo->getCompleted());
         }
 
-        if ($falseItemsNumber == 0){
-
-            foreach ($todos as $todo) {
-                $todo->setCompleted(false);
-            }
-            $actionDone = 'makeAllFalse';
-
-        } else {
-
-            foreach ($todos as $todo) {
-                $todo->setCompleted(true);
-            }
-            $actionDone = 'makeAllTrue';
-
+        
+        $makeAllTrue = $falseItemsNumber > 0;
+        foreach ($todos as $todo) {
+            $todo->setCompleted($makeAllTrue);
         }
+
+        $actionDone = $makeAllTrue ? 'makeAllTrue' : 'makeAllFalse';
 
         $em->flush();
 
@@ -166,7 +153,6 @@ class MainController extends Controller
 
         $user = $this->getUser();
         $todos = $user->getTodos();
-        $todos = $todos->toArray();
 
         $IdArray = [];
         foreach ($todos as $todo) {
@@ -180,7 +166,7 @@ class MainController extends Controller
 
         $em->flush();
 
-        return new JsonResponse($IdArray);
+        return new JsonResponse([ 'removed_item_ids' => $IdArray]);
     }
 
 
@@ -205,6 +191,6 @@ class MainController extends Controller
         $em->flush();
 
 
-        return new JsonResponse("Updated body correctly with text: ".$todo->getBody());
+        return new JsonResponse(['message' => "Updated body correctly with text: ".$todo->getBody()]);
     }
 } 

@@ -136,10 +136,14 @@
 
         $tempTextInput.keydown(function(key) {
             if(key.which == 13) {
-                alert($tempTextInput.val(), todoId);
-                UpdateBody($tempTextInput.val(), todoId);
-                originalText = $tempTextInput.val();
-                $tempTextInput.focusout();
+                var newText = $tempTextInput.val();
+                if ( newText == '') {
+                    alert('You cannot have an empty text field for a task');
+                } else {
+                    UpdateBody($tempTextInput.val(), todoId);
+                    originalText = $tempTextInput.val();
+                    $tempTextInput.focusout();
+                }
             }
         });
 
@@ -147,13 +151,11 @@
     };
 
     function UpdateBody( newText, id) {
-            $.post("{{ path('update_body') }}",
-            {
-                newBody: newText,
-                id: id
-            }, function(result){
-                alert(result);
-            });
+        $.post("{{ path('update_body') }}",
+        {
+            newBody: newText,
+            id: id
+        });
     }
 
     function CreateTodo(todo) {
@@ -166,7 +168,7 @@
 
     function GetTodos() {
         $.get("{{ path('show_todos') }}", function(result){
-            $.each(result, function(i, todo){
+            $.each(result['todo_ids'], function(i, todo){
                 CreateTodo(todo);
             });
         });
@@ -212,7 +214,7 @@
 
         $("#clearCompleted").click(function(){
             $.get("{{ path('clear_completed') }}", function(result){
-                $.each(result, function(i, todo){
+                $.each(result['removed_item_ids'], function(i, todo){
                     $("#" + todo['id']).parent().remove();
                 });
             });
