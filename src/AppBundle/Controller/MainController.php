@@ -16,9 +16,6 @@ class MainController extends Controller
      */
     public function mainAction()
     {   
-        if (! $this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('homepage');
-        }
         $user = $this->getUser();
 
         $todos = $user->getTodos();

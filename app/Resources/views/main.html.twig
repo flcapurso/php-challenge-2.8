@@ -96,7 +96,7 @@
 
 {% block body %}
     <h1>Here are all your tasks</h1>
-    <input id="content" placeholder="What needs to be done?" autofocus>
+    <input id="content" size="35" placeholder="What needs to be done?" autofocus>
     <button id="all" type="button" class="btn btn-primary">All</button>
     <button id="active" type="button" class="btn btn-info">Active</button>
     <button id="completed" type="button" class="btn btn-success">Completed</button>
@@ -196,6 +196,7 @@
                 }, function(newTodo){
                     CreateTodo(newTodo);
                 });
+                $("#content").val('');
             }
         });
 

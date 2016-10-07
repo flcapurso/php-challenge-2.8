@@ -1,0 +1,8 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+    <h2>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</h2>
+    <h3><a href="/main">Click here to go to the main app!</a></h3>
+{% endblock fos_user_content %}
