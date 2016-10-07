@@ -132,11 +132,8 @@ class MainController extends Controller
 
         $actionDone = '';
         $falseItemsNumber = 0;
-        $trueItemsNumber = 0;
         foreach ($todos as $todo) {
-            if ($todo->getCompleted()){
-                $trueItemsNumber++;
-            } else{
+            if (! $todo->getCompleted()){
                 $falseItemsNumber++;
             }
         }
@@ -148,19 +145,13 @@ class MainController extends Controller
             }
             $actionDone = 'makeAllFalse';
 
-        } else if ($trueItemsNumber == 0) {
+        } else {
 
             foreach ($todos as $todo) {
                 $todo->setCompleted(true);
             }
             $actionDone = 'makeAllTrue';
 
-        } else {
-
-            foreach ($todos as $todo) {
-                $todo->setCompleted(! $todo->getCompleted());
-            }
-            $actionDone = 'toggle';
         }
 
         $em->flush();

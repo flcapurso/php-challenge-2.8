@@ -97,7 +97,6 @@
 {% block body %}
     <h1>Here are all your tasks</h1>
     <input id="content" placeholder="What needs to be done?" autofocus>
-    <button id="submit" type="button" class="btn btn-default">Submit </button>
     <button id="all" type="button" class="btn btn-primary">All</button>
     <button id="active" type="button" class="btn btn-info">Active</button>
     <button id="completed" type="button" class="btn btn-success">Completed</button>
@@ -183,32 +182,29 @@
         $.post("{{ path('remove_todo') }}", { id: todoId});
         $removedItem.parent().parent().remove();
     };
-    
 
 
     $(document).ready(function(){
         GetTodos();
 
-        $("#submit").click(function(){
-            var bodyVal = $('#content').val();
-            $.post("{{ path('create_todo') }}",
-            {
-                body: bodyVal
-            }, function(newTodo){
-                CreateTodo(newTodo);
-            });
+        $("#content").keydown(function(key) {
+            if(key.which == 13) {
+                var bodyVal = $('#content').val();
+                $.post("{{ path('create_todo') }}",
+                {
+                    body: bodyVal
+                }, function(newTodo){
+                    CreateTodo(newTodo);
+                });
+            }
         });
 
         $("#completeAll").click(function(){
             $.get("{{ path('complete_all') }}", function(response){
                 if (response['action'] == 'makeAllFalse'){
                     $('input[type="checkbox"]').prop( "checked", false );
-                } else if (response['action'] == 'makeAllTrue'){
-                    $('input[type="checkbox"]').prop( "checked", true );
                 } else {
-                    $('input[type="checkbox"]').each(function () {
-                        $(this).prop( "checked", !$(this).prop("checked") );
-                    });
+                    $('input[type="checkbox"]').prop( "checked", true );
                 };
             });
         });
@@ -216,10 +212,37 @@
         $("#clearCompleted").click(function(){
             $.get("{{ path('clear_completed') }}", function(result){
                 $.each(result, function(i, todo){
-                    $("#" + todo['id']).parent().parent().remove();
+                    $("#" + todo['id']).parent().remove();
                 });
             });
         });
+
+        $("#all").click(function(){
+            $(".todoHolder").css("display", "inline-block");
+        });
+
+        $("#active").click(function(){
+            $('.todoHolder').each(function () {
+                var completed = $(this).find("#completed").prop("checked");
+                if (completed) {
+                    $(this).css("display", "none");
+                } else {
+                    $(this).css("display", "inline-block");
+                }
+            });
+        });
+
+        $("#completed").click(function(){
+            $('.todoHolder').each(function () {
+                var completed = $(this).find("#completed").prop("checked");
+                if (completed) {
+                    $(this).css("display", "inline-block");
+                } else {
+                    $(this).css("display", "none");
+                }
+            });
+        });
+    
 
     });
 </script>
