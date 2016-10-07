@@ -15,6 +15,7 @@
         padding: 2em 1em 2em 1em;
         display: inline-block;
         width: 100%;
+        cursor:pointer;
     }
 
     .todo {
@@ -109,16 +110,52 @@
 {% block javascripts %}
 <script>
     var $todoTemplate = $('\
-        <div class="todoHolder">\
-            <a href="#">\
+        <div class="todoHolder" ondblClick="EditTodo($(this))">\
                 <div class="todo">\
                     <div id="remove" onClick="RemoveTodo($(this))"><div class="segment1"><div class="segment2"></div></div></div>\
                     <input type="checkbox" id="completed" value="1" style="float:left" onCLick="CompleteTodo($(this))"/>\
                     <h3>Article Title</h3>\
                 </div>\
-            </a>\
         </div>\
     ');
+
+    function EditTodo($todo) {
+        var $original = $todo.find('h3');
+        var originalText = $original.text();
+        var todoId = $todo.find('.todo').attr('id');
+        var $tempTextInput = $("<textarea />");
+        $tempTextInput.text(originalText);
+        $tempTextInput.attr("id", "tempTextArea");
+        $original.replaceWith($tempTextInput);
+        $tempTextInput.focus();
+
+        $tempTextInput.focusout(function() {
+            var $newBody = $("<h3 />");
+            $newBody.text(originalText);
+            $tempTextInput.replaceWith($newBody);
+        });
+
+        $tempTextInput.keydown(function(key) {
+            if(key.which == 13) {
+                alert($tempTextInput.val(), todoId);
+                UpdateBody($tempTextInput.val(), todoId);
+                originalText = $tempTextInput.val();
+                $tempTextInput.focusout();
+            }
+        });
+
+
+    };
+
+    function UpdateBody( newText, id) {
+            $.post("{{ path('update_body') }}",
+            {
+                newBody: newText,
+                id: id
+            }, function(result){
+                alert(result);
+            });
+    }
 
     function CreateTodo(todo) {
         var $newTodo = $todoTemplate.clone();
@@ -144,9 +181,11 @@
     function RemoveTodo($removedItem) {
         var todoId = $removedItem.parent().attr('id');
         $.post("{{ path('remove_todo') }}", { id: todoId});
-        $removedItem.parent().parent().parent().remove();
+        $removedItem.parent().parent().remove();
     };
     
+
+
     $(document).ready(function(){
         GetTodos();
 
@@ -170,7 +209,7 @@
                     $('input[type="checkbox"]').each(function () {
                         $(this).prop( "checked", !$(this).prop("checked") );
                     });
-                }
+                };
             });
         });
 
@@ -181,7 +220,6 @@
                 });
             });
         });
-        
 
     });
 </script>

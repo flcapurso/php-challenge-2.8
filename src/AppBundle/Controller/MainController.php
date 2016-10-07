@@ -194,4 +194,29 @@ class MainController extends Controller
 
         return new JsonResponse($IdArray);
     }
+
+
+    /**
+     * @Route("/main/updateBody", name="update_body", options={"expose"=true})
+     */
+    public function updateBodyAction(Request $request)
+    {   
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        $todoId = $request->request->get('id');
+        $todo = $em->getRepository('AppBundle:Todo')->find($todoId);
+
+        if (!$todo) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$todoId
+            );
+        }
+
+        $todo->setBody($request->request->get('newBody'));
+        $em->flush();
+
+
+        return new JsonResponse("Updated body correctly with text: ".$todo->getBody());
+    }
 } 
